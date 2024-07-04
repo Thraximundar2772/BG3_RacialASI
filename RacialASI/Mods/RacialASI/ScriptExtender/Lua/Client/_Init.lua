@@ -1,10 +1,18 @@
 -- Refactorting Argelia
 -- MCM plugin in working update
 
+local MCMModule_UUID  = "755a8a72-407f-4f0d-9a33-274ac0f0b53d"
+
 -- Launch CONFIG
 local function start()
     if not CONFIG then CONFIG = InitConfig() end
 end
+
+-- Launch CONFIG MCM
+local function startMCM()
+    if not CONFIG then CONFIG = InitConfigMCM() end
+end
+
 
 -- Define Actions and Payloads
 
@@ -208,6 +216,9 @@ end
 
 local function handlePayload(action, payload)
     local success, result = pcall(callApiAction, action, { payload = payload })
+    BasicPrint(action)
+    BasicPrint(payload)
+    BasicPrint(result)
     if not success then
         BasicError(string.format("============> ERROR in %s action: %s", action, result))
     end
@@ -232,37 +243,106 @@ local function processOption(optionName, optionValue, actionConfigs)
     end
 end
 
+local function processOptionMCM(optionValue, actionConfigs)
+    if optionValue == true then
+        BasicWarning(string.format("============> %s is enabled.", optionValue))
+
+        for _, actionConfig in ipairs(actionConfigs) do
+            local action = actionConfig.action
+            local payloads = actionConfig.payloads
+            
+            for _, payload in ipairs(payloads) do
+                if payload.Target then
+                    handlePayload(action, payload)
+                else
+                    BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionValue))
+                end
+            end
+        end
+    else
+        BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionValue))
+        BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", actionConfigs))
+    end
+end
+
+
 local function OnStatsLoaded()
     if not isModLoaded("67fbbd53-7c7d-4cfa-9409-6d737b4d92a9") then
         return
     end
 
     BasicPrint("============> OnStatsLoaded function triggered, loading config","INFO", nil, nil, true)
+    
+        local config = loadConfiguration()
+        if not config then
+            return
+        end 
 
-    local config = loadConfiguration()
-    if not config then
+        local options = config.Options
+
+        for optionName, optionValue in pairs(options) do
+        local actionConfigs = optionActions[optionName]
+            if actionConfigs then
+                processOption(optionName, optionValue, actionConfigs.actions)
+            else
+                BasicError(string.format("============> ERROR: No action configuration found for %s.", optionName))
+            end
+        end    
+end
+
+local function OnStatsLoadedMCM()
+    if not isModLoaded("67fbbd53-7c7d-4cfa-9409-6d737b4d92a9") then
         return
     end
 
-    local options = config.Options
+    BasicPrint("============> OnStatsLoadedMCM function triggered, loading config MCM","INFO", nil, nil, true)
 
-    for optionName, optionValue in pairs(options) do
+    local options = MCMGetName("1ebf4a1c-01d4-41ed-8aa1-5b3975c6d019")
+    
+    for optionValue, optionName in pairs(options) do
         local actionConfigs = optionActions[optionName]
+
+        --[[
+        BasicPrint(optionValue)
+        BasicPrint(options)
+        BasicPrint(optionName)
+        BasicPrint(MCMGetValue(optionName))
+        BasicPrint(actionConfigs)
+        BasicPrint(actionConfigs.actions) 
+        ]]--
+
         if actionConfigs then
-            processOption(optionName, optionValue, actionConfigs.actions)
+            processOptionMCM(MCMGetValue(optionName), actionConfigs.actions)
+          --[[  BasicPrint(optionName)
+            BasicPrint(MCMGetValue(optionName))
+            BasicPrint(actionConfigs.actions) 
+            ]]--
         else
-            BasicError(string.format("============> ERROR: No action configuration found for %s.", optionName))
+            BasicError(string.format("============> ERROR: No action configuration found for %s.", optionValue))
         end
     end
 end
 
-Ext.Events.StatsLoaded:Subscribe(start)
-Ext.Events.StatsLoaded:Subscribe(OnStatsLoaded)
+        --BasicPrint(optionActions[optionValue])
+        --BasicPrint(MCMGetValue(optionValue))
+        --BasicPrint(optionValue)
+        --BasicPrint(optionActions[optionValue])
 
----Should've done this from the start
-Ext.Events.GameStateChanged:Subscribe(function(e)
-    if e.FromState == "Running" and e.ToState == "Save" then
-        SyncModVariables()
-        SyncUserVariables()
-    end
-end)
+
+if isModLoaded(MCMModule_UUID) then
+    Ext.Events.StatsLoaded:Subscribe(start)
+    Ext.Events.StatsLoaded:Subscribe(OnStatsLoaded)
+
+    ---Should've done this from the start
+    Ext.Events.GameStateChanged:Subscribe(function(e)
+        if e.FromState == "Running" and e.ToState == "Save" then
+            SyncModVariables()
+            SyncUserVariables()
+        end
+    end)
+else
+    Ext.Events.StatsLoaded:Subscribe(startMCM)
+    -- BasicPrint(MCMGetValue("AddHalfElfDrow_Drow_DrowWeaponTraining_Passives"))
+    -- BasicPrint(MCMGetName("1ebf4a1c-01d4-41ed-8aa1-5b3975c6d019"))
+    Ext.Events.StatsLoaded:Subscribe(OnStatsLoadedMCM)
+end

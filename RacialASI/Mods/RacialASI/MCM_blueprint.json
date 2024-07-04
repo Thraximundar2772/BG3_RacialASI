@@ -1,0 +1,68 @@
+{
+    "SchemaVersion": 1,
+    "ModName": "RacialASI",
+    "Tabs": [
+        {   "TabName": "General Settings",
+            "TabId": "General",
+            "Sections": [
+                {
+                    "SectionId": "RacialASI",
+                    "SectionName": "General Settings",
+                    "Settings": [
+                        {
+                            "Id": "AddUnderdarkRaces_LightSensitivity_Passives",
+                            "Name": "AddUnderdarkRaces LightSensitivity Passives",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Tooltip": "This is a setting that does something else.",
+                            "Description": "This is a setting that does something else, but this text is longer."
+                        },
+                        {
+                            "Id": "AddUndeadGhastlyGhouls_LightSensitivity_Passives",
+                            "Name": "AddUndeadGhastlyGhouls LightSensitivity Passives",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Tooltip": "This is a setting that does something else.",
+                            "Description": "This is a setting that does something else, but this text is longer."
+                        },
+                        {
+                            "Id": "RemoveHuman_HumanMilitia_HumanVersatility_Passives",
+                            "Name": "RemoveHuman HumanMilitia HumanVersatility Passives",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Tooltip": "This is a setting that does something else.",
+                            "Description": "This is a setting that does something else, but this text is longer."
+                        },
+                        {
+                            "Id": "RemoveHalfElf_HumanMilitia_Passives",
+                            "Name": "RemoveHalfElf HumanMilitia Passives",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Tooltip": "This is a setting that does something else.",
+                            "Description": "This is a setting that does something else, but this text is longer."
+                        },
+                        {
+                            "Id": "AddGnome_Tinkertools_Spells",
+                            "Name": "AddGnome Tinkertools Spells",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Tooltip": "This is a setting that does something else.",
+                            "Description": "This is a setting that does something else, but this text is longer."
+                        },
+                        {
+                            "Id": "AddHalfElfDrow_Drow_DrowWeaponTraining_Passives",
+                            "Name": "AddHalfElfDrow Drow DrowWeaponTraining Passives",
+                            "Type": "checkbox",
+                            "Default": true,
+                            "Tooltip": "This is a setting that does something else.",
+                            "Description": "This is a setting that does something else, but this text is longer."
+                        }
+                    ],
+                    "Handles": {
+                        "NameHandle": "h6486a618ge723g479fga67dg84a92417b9ab"
+                    }
+                }
+            ]
+        }
+    ]
+}

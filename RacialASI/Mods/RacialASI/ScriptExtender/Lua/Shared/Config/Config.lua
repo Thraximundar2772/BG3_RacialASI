@@ -150,3 +150,57 @@ function LoadconfigASI()
     BasicPrint("Config.load() - Config.json - Loading...")
     return JSON.LuaTableFromFile(CONFIG.path)
 end
+
+
+function InitConfigMCM()
+    if MOD_INFO then
+        default_config_tbl["VERSION"]=MOD_INFO.VERSION or "1"
+    end
+    CONFIG:initMCM()
+    return CONFIG
+end
+
+
+function CONFIG:initMCM()
+    BasicPrint("    ____             _       __   ___   _____ ____   ____________","INFO", nil, nil, true)
+    BasicPrint("   / __ \\____ ______(_)___ _/ /  /   | / ___//  _/  / ____/ ____/","INFO", nil, nil, true)
+    BasicPrint("  / /_/ / __ `/ ___/ / __ `/ /  / /| | \\__ \\ / /   /___ \\/ __/   ","INFO", nil, nil, true)
+    BasicPrint(" / _, _/ /_/ / /__/ / /_/ / /  / ___ |___/ // /   ____/ / /___   ","INFO", nil, nil, true)
+    BasicPrint("/_/ |_|\\__,_/\\___/_/\\__,_/_/  /_/  |_/____/___/  /_____/_____/   ","INFO", nil, nil, true)
+    BasicPrint("                               ")
+    BasicPrint("                               ")
+    BasicPrint(" ----------------------------- ")
+    BasicPrint(" ----------------------------- ")
+    BasicPrint("                               ")
+    BasicPrint("                               ")
+    BasicPrint(" ----------------------------- ")
+    BasicPrint(" ----------------------------- ")
+    BasicPrint(
+        string.format("Config.initMCM() - %s mod by Fenrules (reworked from Argelia mod) VERSION : %s starting up... ", MOD_INFO.MOD_NAME,
+        MOD_INFO.VERSION),
+        "INFO", nil, nil, true)
+    BasicPrint(" ----------------------------- ")
+    BasicPrint(" ----------------------------- ")
+    BasicPrint("                               ")
+    BasicPrint("                               ")
+
+    if self.data.VERSION ~= MOD_INFO.VERSION then -- or self.data["Options"] ~= MOD_INFO.DEFAULT_CONFIG["Options"]
+        BasicWarning("Config.initMCM() - Detected version, upgrading file...")
+        self:upgrade()
+    else
+        BasicPrint("Config.initMCM() - VERSION check passed")
+    end
+    Files.LogMessage("Config.initMCM()")
+    BasicDebug("Config.initMCM() - DEBUG MESSAGES ARE ENABLED")
+    BasicDebug(self)
+end
+
+function MCMGetValue(ID_name)
+	return Mods.BG3MCM.MCMAPI:GetSettingValue(ID_name, ModuleUUID)
+end
+
+function MCMGetName(mod_GUID)
+	return Mods.BG3MCM.MCMAPI:GetSettingsIDs(Mods.BG3MCM.MCMAPI:GetAllModSettings(mod_GUID))
+end
+
+
