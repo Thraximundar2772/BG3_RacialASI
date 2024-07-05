@@ -329,7 +329,7 @@ end
         --BasicPrint(optionActions[optionValue])
 
 
-if isModLoaded(MCMModule_UUID) then
+if not isModLoaded(MCMModule_UUID) then
     Ext.Events.StatsLoaded:Subscribe(start)
     Ext.Events.StatsLoaded:Subscribe(OnStatsLoaded)
 
