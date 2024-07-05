@@ -194,6 +194,11 @@ local function callApiAction(action, payload)
     local apiFunction = apiActions[action]
 
     if apiFunction then
+        BasicPrint("callApiAction")
+        BasicPrint("payload : ")
+        BasicPrint(payload)
+        BasicPrint("action : ")
+        BasicPrint(action)
         return apiFunction(payload)
     else
         BasicError("============> ERROR: Invalid API action: " .. action)
@@ -224,10 +229,15 @@ end
 
 local function handlePayload(action, payload)
     local success, result = pcall(callApiAction, action, { payload = payload })
-    BasicPrint(string.format("callApiAction : ", callApiAction))
-    BasicPrint(string.format("result : ", result))
-    BasicPrint(string.format("action : ", action))
-    BasicPrint(string.format("payload : ", payload))
+    BasicPrint("handlePayload")
+    BasicPrint("callApiAction : ")
+    BasicPrint(callApiAction)
+    BasicPrint("result : ")
+    BasicPrint(result)
+    BasicPrint("action : ")
+    BasicPrint(action)
+    BasicPrint("payload : ")
+    BasicPrint(payload)
 
     if not success then
         BasicError(string.format("============> ERROR in %s action: %s", action, result))
@@ -245,8 +255,6 @@ local function processOption(optionName, optionValue, actionConfigs)
             for _, payload in ipairs(payloads) do
                 if payload.Target then
                     handlePayload(action, payload)
-                    BasicPrint(string.format("action : ", action))
-                    BasicPrint(string.format("payload : ", payload))
                 else
                     BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionName))
                 end
@@ -265,9 +273,12 @@ local function processOptionMCM(optionName, optionValue, actionConfigs)
             
             for _, payload in ipairs(payloads) do
                 if payload.Target then
-                    BasicPrint(action)
-                    BasicPrint(payload)
                     handlePayload(action, payload)
+                    BasicPrint("processOption")
+                    BasicPrint("action : ")
+                    BasicPrint(action)
+                    BasicPrint("payload : ")
+                    BasicPrint(payload)
                 else
                     BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionValue))
                 end
@@ -325,12 +336,14 @@ local function OnStatsLoadedMCM()
         BasicPrint(actionConfigs.actions) 
         ]]--
 
-        BasicPrint(optionName)
-        BasicPrint(MCMGetValue(optionName))
-        BasicPrint(MCMdata)
-        BasicPrint(actionConfigs.actions) 
-
         if actionConfigs then
+            BasicPrint("OnStatsLoaded")
+            BasicPrint("optionName : ")
+            BasicPrint(optionName)
+            BasicPrint("optionValue : ")
+            BasicPrint(MCMGetValue(optionName))
+            BasicPrint("actionConfigs.actions : ")
+            BasicPrint(actionConfigs.actions)
             processOptionMCM(optionName, MCMGetValue(optionName), actionConfigs.actions)
           --[[  BasicPrint(optionName)
             BasicPrint(MCMGetValue(optionName))
