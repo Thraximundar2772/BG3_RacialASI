@@ -76,9 +76,9 @@ if Ext.Mod.IsModLoaded(deps.MCMModule_UUID) then
     -- This is how you can listen to MCM events and react to theM. This is useful if you want to react to changes in settings or other events.
     -- This is a client-side event, so it should be placed in the BootstrapClient.lua file.
     Ext.RegisterNetListener("MCM_Saved_Setting", function(call, payload)
-        local data = Ext.Json.Parse(payload)
+        MCMdata = Ext.Json.Parse(payload)
         -- Always check if the data is valid and is related to your mod (unless for some reason you want to listen to other mods' events)
-        if not data or data.modGUID ~= ModuleUUID or not data.settingId then
+        if not MCMdata or MCMdata.modGUID ~= ModuleUUID or not MCMdata.settingId then
             return
         end
     end)

@@ -204,6 +204,14 @@ local function isModLoaded(modId)
     return Ext.Mod.IsModLoaded(modId)
 end
 
+local function MCMGetValue(ID_name)
+    return Mods.BG3MCM.MCMAPI:GetSettingValue(ID_name, ModuleUUID)
+end
+
+local function MCMGetName(mod_GUID)
+    return Mods.BG3MCM.MCMAPI:GetSettingsIDs(Mods.BG3MCM.MCMAPI:GetAllModSettings(mod_GUID))
+end
+
 local function loadConfiguration()
     local configData = LoadconfigASI()
     if not configData then
@@ -216,8 +224,11 @@ end
 
 local function handlePayload(action, payload)
     local success, result = pcall(callApiAction, action, { payload = payload })
-    BasicPrint(callApiAction)
-    BasicPrint(result)
+    BasicPrint(string.format("callApiAction : ", callApiAction))
+    BasicPrint(string.format("result : ", result))
+    BasicPrint(string.format("action : ", action))
+    BasicPrint(string.format("payload : ", payload))
+
     if not success then
         BasicError(string.format("============> ERROR in %s action: %s", action, result))
     end
@@ -234,6 +245,8 @@ local function processOption(optionName, optionValue, actionConfigs)
             for _, payload in ipairs(payloads) do
                 if payload.Target then
                     handlePayload(action, payload)
+                    BasicPrint(string.format("action : ", action))
+                    BasicPrint(string.format("payload : ", payload))
                 else
                     BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionName))
                 end
@@ -242,9 +255,9 @@ local function processOption(optionName, optionValue, actionConfigs)
     end
 end
 
-local function processOptionMCM(optionValue, actionConfigs)
+local function processOptionMCM(optionName, optionValue, actionConfigs)
     if optionValue == true then
-        BasicWarning(string.format("============> %s is enabled.", optionValue))
+        BasicWarning(string.format("============> %s is enabled.", optionName))
 
         for _, actionConfig in ipairs(actionConfigs) do
             local action = actionConfig.action
@@ -252,6 +265,8 @@ local function processOptionMCM(optionValue, actionConfigs)
             
             for _, payload in ipairs(payloads) do
                 if payload.Target then
+                    BasicPrint(action)
+                    BasicPrint(payload)
                     handlePayload(action, payload)
                 else
                     BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionValue))
@@ -296,7 +311,7 @@ local function OnStatsLoadedMCM()
 
     BasicPrint("============> OnStatsLoadedMCM function triggered, loading config MCM","INFO", nil, nil, true)
 
-    local options = MCMGetName("1ebf4a1c-01d4-41ed-8aa1-5b3975c6d019")
+    local options = Mods.BG3MCM.MCMAPI:GetSettingsIDs(Mods.BG3MCM.MCMAPI:GetAllModSettings("1ebf4a1c-01d4-41ed-8aa1-5b3975c6d019"))
     
     for optionValue, optionName in pairs(options) do
         local actionConfigs = optionActions[optionName]
@@ -310,8 +325,13 @@ local function OnStatsLoadedMCM()
         BasicPrint(actionConfigs.actions) 
         ]]--
 
+        BasicPrint(optionName)
+        BasicPrint(MCMGetValue(optionName))
+        BasicPrint(MCMdata)
+        BasicPrint(actionConfigs.actions) 
+
         if actionConfigs then
-            processOptionMCM(MCMGetValue(optionName), actionConfigs.actions)
+            processOptionMCM(optionName, MCMGetValue(optionName), actionConfigs.actions)
           --[[  BasicPrint(optionName)
             BasicPrint(MCMGetValue(optionName))
             BasicPrint(actionConfigs.actions) 
@@ -327,8 +347,7 @@ end
         --BasicPrint(optionValue)
         --BasicPrint(optionActions[optionValue])
 
-
-if not isModLoaded(MCMModule_UUID) then
+--[[ if not isModLoaded(MCMModule_UUID) then
     Ext.Events.StatsLoaded:Subscribe(start)
     Ext.Events.StatsLoaded:Subscribe(OnStatsLoaded)
 
@@ -339,9 +358,9 @@ if not isModLoaded(MCMModule_UUID) then
             SyncUserVariables()
         end
     end)
-else
+-- else ]]
     Ext.Events.StatsLoaded:Subscribe(startMCM)
     -- BasicPrint(MCMGetValue("AddHalfElfDrow_Drow_DrowWeaponTraining_Passives"))
     -- BasicPrint(MCMGetName("1ebf4a1c-01d4-41ed-8aa1-5b3975c6d019"))
     Ext.Events.StatsLoaded:Subscribe(OnStatsLoadedMCM)
-end
+-- end
