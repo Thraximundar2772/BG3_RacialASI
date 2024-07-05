@@ -216,8 +216,7 @@ end
 
 local function handlePayload(action, payload)
     local success, result = pcall(callApiAction, action, { payload = payload })
-    BasicPrint(action)
-    BasicPrint(payload)
+    BasicPrint(callApiAction)
     BasicPrint(result)
     if not success then
         BasicError(string.format("============> ERROR in %s action: %s", action, result))
