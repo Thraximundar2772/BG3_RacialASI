@@ -224,9 +224,6 @@ end
 
 local function handlePayload(action, payload)
     local success, result = pcall(callApiAction, action, { payload = payload })
-    BasicPrint(payload)
-    BasicPrint(string.format("============> ERROR in %s action: %s", action, result))
-
     if not success then
         BasicError(string.format("============> ERROR in %s action: %s", action, result))
     end
@@ -248,37 +245,6 @@ local function processOption(optionName, optionValue, actionConfigs)
                 end
             end
         end
-    end
-end
-
-local function processOptionMCM(optionName, optionValue, actionConfigs)
-    if optionValue then
-        BasicWarning(string.format("============> %s is enabled.", optionName))
-
-        for _, actionConfig in ipairs(actionConfigs) do
-            local action = actionConfig.action
-            local payloads = actionConfig.payloads
-            BasicPrint(action)
-            BasicPrint(payloads)
-            if action == "InsertSelectors" then
-                Mods.SubclassCompatibilityFramework.Api.InsertSelectors(payloads)
-            end
-            --[[
-            for _, payload in ipairs(payloads) do
-                if payload.Target then
-
-                    BasicPrint(payload)
-                    BasicPrint(payload.modGuid)
-                    BasicPrint(payload.Params)
-                    handlePayload(action, payload)
-                else
-                    BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionValue))
-                end
-             ]]--
-        end
-    else
-        BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionValue))
-        BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", actionConfigs))
     end
 end
 
@@ -305,6 +271,26 @@ local function OnStatsLoaded()
                 BasicError(string.format("============> ERROR: No action configuration found for %s.", optionName))
             end
         end    
+end
+
+
+local function processOptionMCM(optionName, optionValue, actionConfigs)
+    if optionValue then
+        BasicWarning(string.format("============> %s is enabled.", optionName))
+
+        for _, actionConfig in ipairs(actionConfigs) do
+            local action = actionConfig.action
+            local payloads = actionConfig.payloads
+
+            for _, payload in ipairs(payloads) do
+                if payload.Target then
+                    handlePayload(action, payload)
+                else
+                    BasicError(string.format("============> ERROR: Invalid target UUID for payload in '%s'.", optionName))
+                end
+            end
+        end
+    end
 end
 
 local function OnStatsLoadedMCM()
